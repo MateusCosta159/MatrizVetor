@@ -1,0 +1,99 @@
+#include <stdio.h>
+#include <locale.h>
+#define QTD 50
+
+struct conta{
+    int codigo;
+    int numeroConta;
+    float saldo;
+};
+
+void novaConta(struct conta c[], int *pos){
+    printf("\nDigite o código da conta");
+    scanf("%d", &c[*pos].codigo);
+
+    printf("\nDigite o número da conta");
+    scanf("%d", &c[*pos].numeroConta);
+
+    printf("\nDigite o depósito inicial da conta");
+    scanf("%f", &c[*pos].saldo);
+
+    *pos += 1;
+}
+
+void excluirConta(){
+//DO TO: escreva a lógica para excluir uma conta existente.
+}
+
+void deposito(int *pos){
+
+    int contaDeposito;
+
+    printf("Digite o número da conta que deseja depositar");
+    scanf("%d", &contaDeposito);
+
+    *pos = 0;
+
+    if ();
+
+}
+
+void saque(struct conta c[], int *pos){
+
+    int numConta;
+
+    printf("Digite o codigo da conta que deseja sacar ");
+    scanf("%d", &numConta);
+
+
+    if(numConta == c[*pos].codigo){
+
+    }
+
+    if()
+
+}
+
+
+int main(){
+
+    setlocale(LC_ALL, "Portuguese");
+
+    int opcao;
+    int posicao = 0;
+
+    struct conta contas[QTD];
+
+    while (1)
+    {
+        printf("[1] - Nova conta\n[2] - Excluir conta \n[3] - Depósito\n[4] - Saque\n[5] - Consulta\n[6] - Sair");
+        scanf("%d", &opcao);
+
+        switch (opcao)
+        {
+        case 1:
+            novaConta(contas, &posicao);
+            break;
+        case 2:
+            excluirConta();
+            break;
+        case 3:
+            deposito(&posicao);
+            break;
+        case 4:
+            saque();
+            break;
+        case 5:
+            consulta();
+            break;
+        case 6:
+            printf("\nEncerrando...\n");
+            return 0;
+        default:
+            printf("\nOpção inválida, digite um número de 1 a 4.\n");
+            break;
+        }
+    };
+
+    return 0;
+}
