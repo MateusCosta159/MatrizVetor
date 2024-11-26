@@ -1,69 +1,185 @@
 #include <stdio.h>
-#define TAM 100
+#include <locale.h>
+#define QTD 50
 
-void inicializarMatriz(int m[TAM][TAM])
-{
-    int ln, col;
-    for (ln = 0; ln < TAM; ln++)
-    {
-        for (col = 0; col < TAM; col++)
-        {
-            m[ln][col] = 0;
+struct conta{
+    int codigo;
+    int numeroConta;
+    float saldo;
+};
+
+void novaConta(struct conta c[], int *pos){
+    printf("\nDigite o código da conta: ");
+    scanf("%d", &c[*pos].codigo);
+
+    printf("\nDigite o número da conta: ");
+    scanf("%d", &c[*pos].numeroConta);
+
+    printf("\nDigite o depósito inicial da conta: ");
+    scanf("%f", &c[*pos].saldo);
+
+    *pos += 1;
+}
+
+
+void excluirConta(struct conta c[], int *pos) {
+    int numConta, i, j;
+    int encontrou = 0;
+
+    if (*pos == 0) {
+        printf("\nNenhuma conta cadastrada para excluir.\n");
+        return;
+    }
+
+    printf("\nDigite o número da conta que deseja excluir: ");
+    scanf("%d", &numConta);
+
+    for (i = 0; i < *pos; i++) {
+        if (c[i].numeroConta == numConta) {
+            // Desloca as contas subsequentes para a posição anterior
+            for (j = i; j < *pos - 1; j++) {
+                c[j] = c[j + 1];
+            }
+            (*pos)--; // Decrementa o número total de contas
+            printf("\nConta excluída com sucesso.\n");
+            encontrou = 1;
+            break;
         }
     }
-}
 
-void preencherMatriz(int *matriz)
-{
-    for (int i = 0; i < TAM * TAM; i++) {
-        *(matriz + i) = i + 1;  
+    if (!encontrou) {
+        printf("\nConta não encontrada.\n");
     }
 }
 
-void imprimirMatriz(int m[TAM][TAM])
-{
-    int ln, col;
-    for (ln = 0; ln < TAM; ln++)
-    {
-        for (col = 0; col < TAM; col++)
-        {
-            printf("%d ", m[ln][col]);
+
+
+void deposito(int *pos, struct conta c[]) {
+    int contaDeposito, i;
+    float valorDeposito;
+    int encontrou = 0;
+
+    printf("Digite o número da conta que deseja depositar: ");
+    scanf("%d", &contaDeposito);
+
+    for (i = 0; i < *pos; i++) {
+        if (c[i].numeroConta == contaDeposito) {
+            printf("\nDigite o valor do depósito que deseja realizar: ");
+            scanf("%f", &valorDeposito);
+
+            if (valorDeposito > 0) {
+                c[i].saldo += valorDeposito;
+                printf("\nDepósito realizado com sucesso. Novo saldo: %.2f\n", c[i].saldo);
+            } else {
+                printf("\nPara realizar o depósito, é necessário que o valor seja maior que 0.\n");
+            }
+            encontrou = 1;
+            break;
         }
-        printf("\n \n");
+    }
+
+    if (!encontrou) {
+        printf("\nConta não encontrada.\n");
     }
 }
 
-int main()
-{
+
+void saque(struct conta c[], int *pos) {
+    int numConta, i;
+    float valorSaque;
+    int encontrou = 0;
+
+    printf("\nDigite o número da conta que deseja realizar o saque: ");
+    scanf("%d", &numConta);
+
+    for (i = 0; i < *pos; i++) {
+        if (c[i].numeroConta == numConta) {
+            printf("\nDigite o valor do saque que deseja realizar: ");
+            scanf("%f", &valorSaque);
+
+            if (valorSaque <= 0) {
+                printf("\nO valor deve ser maior que 0.\n");
+            } else if (valorSaque > c[i].saldo) {
+                printf("\nSaldo insuficiente. Saldo disponível: %.2f\n", c[i].saldo);
+            } else {
+                c[i].saldo -= valorSaque;
+                printf("\nSaque realizado com sucesso. Novo saldo: %.2f\n", c[i].saldo);
+            }
+            encontrou = 1;
+            break;
+        }
+    }
+
+    if (!encontrou) {
+        printf("\nConta não encontrada.\n");
+    }
+}
+
+
+void consulta(struct conta c[], int *pos) {
+    int numConta, i;
+    int encontrou = 0;
+
+    printf("\nDigite o número da conta que deseja consultar: ");
+    scanf("%d", &numConta);
+
+    for (i = 0; i < *pos; i++) {
+        if (c[i].numeroConta == numConta) {
+            printf("\n===== DADOS DA SUA CONTA =====\n");
+            printf("Código da conta: %d\n", c[i].codigo);
+            printf("Número da conta: %d\n", c[i].numeroConta);
+            printf("Saldo da conta: %.2f\n", c[i].saldo);
+            encontrou = 1;
+            break;
+        }
+    }
+
+    if (!encontrou) {
+        printf("\nConta não encontrada.\n");
+    }
+}
+
+
+
+int main(){
+
+    setlocale(LC_ALL, "Portuguese");
 
     int opcao;
-    int matriz[TAM][TAM];
+    int posicao = 0;
 
-    while(1)
+    struct conta contas[QTD];
+
+    while (1)
     {
-        printf("[1] - Inicializar matriz\n[2] - Preencher matriz \n[3] - Imprimir matriz preenchida\n[4] - Sair\n");
+        printf("[1] - Nova conta\n[2] - Excluir conta \n[3] - Depósito\n[4] - Saque\n[5] - Consulta\n[6] - Sair\nEscolha uma opção: ");
         scanf("%d", &opcao);
 
         switch (opcao)
         {
         case 1:
-            inicializarMatriz(matriz);
+            novaConta(contas, &posicao);
             break;
         case 2:
-            preencherMatriz(&matriz[0][0]);
+            excluirConta(contas, &posicao);
             break;
         case 3:
-            imprimirMatriz(matriz);
+            deposito(&posicao, contas);
             break;
         case 4:
-            printf("\nEncerrando...");
-            return 0;
+            saque(contas, &posicao);
             break;
+        case 5:
+            consulta(contas, &posicao);
+            break;
+        case 6:
+            printf("\nEncerrando...\n");
+            return 0;
         default:
-            printf("Opção inválida, digite um número de 1 a 4.");
+            printf("\nOpção inválida, digite um número de 1 a 4.\n");
             break;
         }
-    } ;
+    };
 
-    return 0;
+       return 0;
 }
